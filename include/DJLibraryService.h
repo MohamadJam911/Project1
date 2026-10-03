@@ -1,0 +1,64 @@
+#ifndef DJLIBRARYSERVICE_H
+#define DJLIBRARYSERVICE_H
+
+#include "Playlist.h"
+#include "AudioTrack.h"
+#include "SessionFileParser.h"
+#include <vector>
+#include <string>
+
+// Service responsible for managing the track library and playlists
+// Phase 4 behavior alignment:
+// - Load library tracks from config file
+// - Build playlists from track indices referencing the library
+class DJLibraryService {
+public:
+    DJLibraryService(const Playlist& playlist);
+    DJLibraryService(): playlist(), library(){}
+
+    /**
+     * @brief Build the track library from parsed config data
+     * @param library_tracks Vector of track info from config
+     */
+    void buildLibrary(const std::vector<SessionConfig::TrackInfo>& library_tracks);
+
+    /**
+     * @brief Load a playlist by constructing it from track indices
+     * @param playlist_name Name of the playlist
+     * @param track_indices Vector of 1-based track indices referencing the library
+     */
+    void loadPlaylistFromIndices(const std::string& playlist_name, const std::vector<int>& track_indices);
+
+    // Returns a reference to the loaded playlist
+    Playlist& getPlaylist();
+
+    // Display the currently loaded playlist (debug aid)
+    void displayLibrary() const;
+
+    /**
+     * @brief Find a track in the currently loaded playlist by its title.
+     * @param track_title The title of the track to find.
+     * @return A raw pointer to the AudioTrack if found, otherwise nullptr.
+     * The playlist retains ownership of the track.
+     */
+    AudioTrack* findTrack(const std::string& track_title);
+
+    /**
+     * @brief Get a vector of all track titles in the current playlist.
+     * @return Track titles in playlist order (most recently added first).
+     */
+    std::vector<std::string> getTrackTitles() const;
+
+    // Deletes all library tracks (the library owns them)
+    ~DJLibraryService();
+
+    // The library owns raw pointers, so copying is disabled to avoid double deletes
+    DJLibraryService(const DJLibraryService&) = delete;
+    DJLibraryService& operator=(const DJLibraryService&) = delete;
+
+private:
+    Playlist playlist;                 // Currently loaded playlist (owns clones of library tracks)
+    std::vector<AudioTrack*> library;  // Library of all tracks (owned)
+};
+
+#endif // DJLIBRARYSERVICE_H

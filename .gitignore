@@ -1,0 +1,20 @@
+# Build outputs (bin/dj_config.txt is tracked; it is required at runtime)
+bin/*
+!bin/dj_config.txt
+obj/
+*.o
+*.d
+*.exe
+*.out
+
+# Editor / local settings
+.vscode/
+*.code-workspace
+*.code-profile
+
+# Local run logs and scratch files
+my_output
+my_output.txt
+test_output.txt
+interactive_output.txt
+track
